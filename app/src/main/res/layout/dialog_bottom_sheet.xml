@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_bottom_sheet"
+    android:paddingHorizontal="20dp">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose"
+        android:paddingVertical="10dp"
+        android:gravity="center"
+        android:textSize="25dp"
+        android:textColor="@color/black"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingVertical="10dp">
+        <LinearLayout
+            android:id="@+id/btn_camera"
+            android:clickable="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="10dp"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:tint="@color/green_ming"
+                android:src="@drawable/ic_camera"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Take a Photo"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:textStyle="italic"
+                android:paddingLeft="20dp"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_gallery"
+            android:orientation="horizontal"
+            android:paddingVertical="10dp"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                app:tint="@color/green_ming"
+                android:src="@drawable/ic_gallery"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gallery"
+                android:textColor="@color/black"
+                android:gravity="center_vertical"
+                android:textStyle="italic"
+                android:paddingLeft="20dp"/>
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+</LinearLayout>
