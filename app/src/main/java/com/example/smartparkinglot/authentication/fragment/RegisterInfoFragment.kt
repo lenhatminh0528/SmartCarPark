@@ -22,6 +22,7 @@ import com.example.smartparkinglot.hideKeyboard
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.fragment_register_info.view.*
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
@@ -46,7 +47,10 @@ class RegisterInfoFragment : Fragment() {
     private var bottomSheet: BottomSheetDialog? = null
     private lateinit var rootActivity: AuthActivity
     private lateinit var binding: FragmentRegisterInfoBinding
-    private lateinit var startForResult: ActivityResultLauncher<String>
+
+    private lateinit var startForGalleryResult: ActivityResultLauncher<String>
+    private lateinit var startForCameraResult: ActivityResultLauncher<Intent>
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,28 +58,34 @@ class RegisterInfoFragment : Fragment() {
         binding = FragmentRegisterInfoBinding.inflate(inflater, container, false)
         rootActivity = activity as AuthActivity
 
-    startForResult =
-        rootActivity.registerForActivityResult(ActivityResultContracts.GetContent())
-        {
-            binding.image.setImageURI(it)
-            binding.image.visibility = View.VISIBLE
-            binding.textImg.visibility = View.GONE
-        }
-
         return binding.root
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        startForGalleryResult =
+            registerForActivityResult(ActivityResultContracts.GetContent())
+            {
+                binding.image.setImageURI(it)
+                binding.image.visibility = View.VISIBLE
+                binding.textImg.visibility = View.GONE
+            }
+
+        startForCameraResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+        {
+            if(it.resultCode == Activity.RESULT_OK){
+                val bitmap = it.data?.extras?.get("data") as Bitmap
+                binding.image.setImageBitmap(bitmap)
+                binding.image.visibility = View.VISIBLE
+                binding.textImg.visibility = View.GONE
+            }
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        view.setOnTouchListener(View.OnTouchListener{view, _ ->
-//            view.edt_username.clearFocus()
-//            view.edt_address.clearFocus()
-//            view.edt_car_number.clearFocus()
-//            view.edt_card_id.clearFocus()
-//            activity?.hideKeyboard(view)
-//             true
-//        })
         setupBottomSheet()
         setupAction()
     }
@@ -95,6 +105,8 @@ class RegisterInfoFragment : Fragment() {
                 )
             ) {
                 //request camera
+                var cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startForCameraResult.launch(cameraIntent)
             } else {
                 ActivityCompat.requestPermissions(
                     rootActivity,
@@ -111,7 +123,7 @@ class RegisterInfoFragment : Fragment() {
                     arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE)
                 )
             ) {
-                startForResult.launch("image/*")
+                startForGalleryResult.launch("image/*")
                 bottomSheet!!.dismiss()
             } else {
                 ActivityCompat.requestPermissions(
