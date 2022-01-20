@@ -65,10 +65,15 @@ class LoginFragment : Fragment() {
         binding.username.clearFocus()
         binding.password.clearFocus()
         rootActivity.showBottomSheet()
-//        showProgress()
+        showLoading()
         // call api
         //show loader
     }
+
+    private fun showLoading(){
+        loading = rootActivity.showLoadingDialog()
+    }
+
 
     private fun showConfirmDialog(){
         mConfirmationDialog = rootActivity.showConfirmationDialog("Confirmation",

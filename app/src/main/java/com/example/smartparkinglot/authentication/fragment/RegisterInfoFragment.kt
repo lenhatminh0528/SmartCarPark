@@ -30,6 +30,19 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 
 import androidx.core.content.FileProvider
 import androidx.test.core.app.ApplicationProvider
+import com.example.smartparkinglot.custom.LoadingDialog
+import com.example.smartparkinglot.network.APIService
+import com.example.smartparkinglot.network.RESTClient
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import retrofit2.Retrofit
 
 //import androidx.test.orchestrator.junit.BundleJUnitUtils.getResult
 import java.io.File
@@ -43,7 +56,7 @@ class RegisterInfoFragment : Fragment() {
         private const val PICK_IMAGE = 1
         private const val PERMISSION_REQUEST = 10
     }
-
+    private var loading: LoadingDialog? = null
     private var bottomSheet: BottomSheetDialog? = null
     private lateinit var rootActivity: AuthActivity
     private lateinit var binding: FragmentRegisterInfoBinding
@@ -142,10 +155,7 @@ class RegisterInfoFragment : Fragment() {
         }
 
         binding.root.setOnTouchListener(View.OnTouchListener { view, _ ->
-            view.edt_username.clearFocus()
-            view.edt_address.clearFocus()
-            view.edt_car_number.clearFocus()
-            view.edt_card_id.clearFocus()
+            clearFocus()
             activity?.hideKeyboard(view)
             true
         })
@@ -154,6 +164,99 @@ class RegisterInfoFragment : Fragment() {
             bottomSheet!!.show()
         }
 
+        binding.btnRegister.setOnClickListener{
+            handleRegister()
+        }
+    }
+
+    private fun clearFocus() {
+        binding.edtPassword.clearFocus()
+        binding.edtUsername.clearFocus()
+        binding.edtCarNumber.clearFocus()
+        binding.edtCardId.clearFocus()
+        binding.edtAddress.clearFocus()
+    }
+
+    private fun handleRegister() {
+        clearFocus()
+        showLoading()
+        if(isValidate()){
+            callAPI()
+        }
+    }
+
+    private fun showLoading() {
+        loading = rootActivity.showLoadingDialog()
+    }
+
+    private fun isValidate() : Boolean {
+        if(binding.edtUsername.text?.isEmpty() == true){
+            binding.edtUsername.requestFocus()
+            return false
+        }
+        if(binding.edtPassword.text?.isEmpty() == true){
+            binding.edtPassword.requestFocus()
+            return false
+        }
+        if(binding.edtCardId.text?.isEmpty() == true){
+            binding.edtCardId.requestFocus()
+            return false
+        }
+        if(binding.edtCarNumber.text?.isEmpty() == true){
+            binding.edtCarNumber.requestFocus()
+            return false
+        }
+        return true
+    }
+
+    private fun callAPI() {
+        val retrofit = RESTClient.createClient("https://855d-116-110-40-48.ngrok.io")
+        // Create Service
+        val service = retrofit.create(APIService::class.java)
+
+        val userName = binding.edtUsername.text
+        val password = binding.edtPassword.text
+        val idCard = binding.edtCardId.text
+        val carnum = binding.edtCarNumber.text
+        val address= if(binding.edtAddress.text?.isNotEmpty() == true) binding.edtAddress.text else ""
+
+        // Create JSON using JSONObject
+        val jsonObject = JSONObject()
+            with(jsonObject){
+                put("username", userName)
+                put("password", password)
+                put("address", address)
+                put("idcard", idCard)
+                put("carnum", carnum)
+            }
+        // Convert JSONObject to String
+        val jsonObjectString = jsonObject.toString()
+
+        // Create RequestBody ( We're not using any converter, like GsonConverter, MoshiConverter e.t.c, that's why we use RequestBody )
+        val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
+
+        CoroutineScope(Dispatchers.IO).launch {
+            // Do the POST request and get response
+            val response = service.signUp(requestBody)
+
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    // Convert raw JSON to pretty JSON using GSON library
+//                    val gson = GsonBuilder().setPrettyPrinting().create()
+//                    val prettyJson = gson.toJson(
+//                        JsonParser.parseString(
+//                            response.body()
+//                                ?.string() // About this thread blocking annotation : https://github.com/square/retrofit/issues/3255
+//                        )
+//                    )
+                    findNavController().popBackStack()
+                    loading?.dismiss()
+                } else {
+                    loading?.dismiss()
+                    Log.e("RETROFIT_ERROR", response.code().toString())
+                }
+            }
+        }
     }
 
 }

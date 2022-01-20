@@ -36,9 +36,8 @@
             android:layout_height="match_parent">
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical">
-
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/username"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -51,6 +50,26 @@
                     app:boxBackgroundMode="outline">
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/edt_username"
+                        android:maxLines="1"
+                        android:fontFamily="sans-serif-medium"
+                        android:layout_width="match_parent"
+                        android:nextFocusDown="@+id/password"
+                        android:inputType="text"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical" />
+                </com.google.android.material.textfield.TextInputLayout>
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/password"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginHorizontal="20dp"
+                    android:layout_marginTop="8dp"
+                    android:animateLayoutChanges="true"
+                    android:hint="Password"
+                    app:boxBackgroundMode="outline">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_password"
                         android:maxLines="1"
                         android:fontFamily="sans-serif-medium"
                         android:layout_width="match_parent"
@@ -120,6 +139,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
                 <LinearLayout
                     android:id="@+id/car_img"
+                    android:visibility="gone"
                     android:layout_marginHorizontal="20dp"
                     android:paddingHorizontal="15dp"
                     android:layout_marginTop="15dp"
@@ -143,7 +163,7 @@
                         android:layout_height="250dp"/>
                 </LinearLayout>
                 <LinearLayout
-                    android:id="@+id/btn_signIn"
+                    android:id="@+id/btn_register"
                     android:clickable="true"
                     android:layout_marginTop="15dp"
                     android:layout_marginHorizontal="40dp"
