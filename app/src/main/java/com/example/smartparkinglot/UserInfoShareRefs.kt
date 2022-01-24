@@ -3,6 +3,7 @@ package com.example.smartparkinglot
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.example.smartparkinglot.model.User
 import com.google.gson.Gson
 
@@ -44,6 +45,17 @@ object AppShareRefs {
         val prefsEditor: SharedPreferences.Editor = preferences(context).edit()
         prefsEditor.putString(USER_INFO, gsonData)
         prefsEditor.apply()
+    }
+
+    fun getUserId(context: Context): String? {
+        return preferences(context).getString(USER_ID, "")
+    }
+
+    fun setUserId(context: Context, userId: String) {
+        preferences(context).edit(){
+            putString(USER_ID, userId)
+            apply()
+        }
     }
 
     fun getInfo (context: Context): User{

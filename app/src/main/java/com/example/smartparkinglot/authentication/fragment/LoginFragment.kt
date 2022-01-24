@@ -2,6 +2,7 @@ package com.example.smartparkinglot.authentication.fragment
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,13 +12,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.navigation.fragment.findNavController
+import com.example.smartparkinglot.AppShareRefs
 import com.example.smartparkinglot.hideKeyboard
 import com.example.smartparkinglot.R
 import com.example.smartparkinglot.authentication.AuthActivity
 import com.example.smartparkinglot.custom.ConfirmationDialog
 import com.example.smartparkinglot.custom.LoadingDialog
+import com.example.smartparkinglot.dashboard.DashboardActivity
 import com.example.smartparkinglot.databinding.FragmentLoginBinding
+import com.example.smartparkinglot.network.APIService
+import com.example.smartparkinglot.network.RESTClient
 import kotlinx.android.synthetic.main.fragment_login.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 
 class LoginFragment : Fragment() {
     private var mConfirmationDialog: ConfirmationDialog? = null
@@ -65,9 +77,35 @@ class LoginFragment : Fragment() {
         binding.username.clearFocus()
         binding.password.clearFocus()
         rootActivity.showBottomSheet()
+
+        val userName = binding.username
+        val password = binding.password
+
+        val jsonObject = JSONObject()
+        with(jsonObject){
+            put("username", userName)
+            put("password", password)
+        }
         showLoading()
         // call api
-        //show loader
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val response = RESTClient.createClient("https://855d-116-110-40-48.ngrok.io")
+                .create(APIService::class.java)
+                .signIn(jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+            withContext(Dispatchers.Main){
+                if(response.isSuccessful){
+                    loading?.dismiss()
+//                    AppShareRefs.setUserId(this,response?.)
+                    val intent = Intent(rootActivity, DashboardActivity::class.java)
+                    startActivity(intent)
+                }else {
+                    loading?.dismiss()
+                    Log.e("RETROFIT_ERROR", response.code().toString())
+                }
+            }
+
+        }
     }
 
     private fun showLoading(){

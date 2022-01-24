@@ -12,12 +12,12 @@ import retrofit2.http.POST
 private const val BASE_URL = "https://d2ac-203-205-33-94.ngrok.io"
 //private const val BASE_URL = "http://dummy.restapiexample.com"
 interface APIService {
-//    @POST("/signup")
-//    suspend fun signupUser(@Body requestBody: RequestBody): Response<Respon>
-//    @POST("/api/v1/create")
+
     @POST("/signup")
     suspend fun signUp(@Body requestBody: RequestBody): Response<ResponseBody>
     @POST("/signIn")
     suspend fun signIn(@Body requestBody: RequestBody): Response<ResponseBody>
+    @POST("/fetchMe")
+    suspend fun fetchMe(@Body requestBody: RequestBody): Response<ResponseBody>
 
 }
