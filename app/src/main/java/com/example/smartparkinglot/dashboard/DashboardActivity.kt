@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.findNavController
@@ -16,10 +17,16 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.smartparkinglot.AppShareRefs
 import com.example.smartparkinglot.BaseActivity
 import com.example.smartparkinglot.R
+import com.example.smartparkinglot.custom.AlertDialog
+import com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
 import com.example.smartparkinglot.databinding.ActivityDashboardBinding
+import com.example.smartparkinglot.model.User
 import com.example.smartparkinglot.network.APIService
 import com.example.smartparkinglot.network.RESTClient
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,27 +37,31 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 class DashboardActivity : BaseActivity() {
+    private val TAG = "DashboardActivity"
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityDashboardBinding
-
+    private lateinit var alertDialog: AlertDialog
+    private lateinit var userInfoViewModel: UserInfoViewModel
     override fun bindingView() {
         supportActionBar?.hide()
         binding = ActivityDashboardBinding.inflate(layoutInflater)
+        userInfoViewModel = ViewModelProvider(this).get(UserInfoViewModel::class.java)
         setContentView(binding.root)
         setupNavigation()
     }
 
     override fun initData() {
-        val userId = AppShareRefs.getUserId(this)
+//        val userId = AppShareRefs.getUserId(this)
         //call API
-
-
+        var userId: String = intent.extras?.get("user_id").toString()
+        Log.d(TAG, "initData: $userId")
        CoroutineScope(Dispatchers.IO).launch{
            //JSON using JSONObject
            val jsonObject = JSONObject()
            with(jsonObject){
-               put("id_user", userId)
+               put("col", "user")
+               put("id", userId)
            }
            // Convert JSONObject to String
            val jsonObjectString = jsonObject.toString()
@@ -58,21 +69,51 @@ class DashboardActivity : BaseActivity() {
            // Create RequestBody ( We're not using any converter, like GsonConverter, MoshiConverter e.t.c, that's why we use RequestBody )
            val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
 
-           val result = RESTClient.createClient("")
+           val response = RESTClient.createClient()
                .create(APIService::class.java)
-               .fetchMe(requestBody)
-           withContext(Dispatchers.Main){
-               if(result.isSuccessful){
-                   //
-               }else {
+               .showDB("user", userId.substring(1, userId.length - 1))
 
+           withContext(Dispatchers.Main){
+               if(response.isSuccessful){
+                   val gson = GsonBuilder().setPrettyPrinting().create()
+
+                   var prettyJson = gson.fromJson(
+                       JsonParser.parseString(
+                       response.body()
+                           ?.string()), JsonObject::class.java)
+                   Log.d(TAG, "initData: $prettyJson")
+                   val status: String = prettyJson.get("status").toString()
+                   if(status.contains("success")){
+                       val data =  gson.fromJson(prettyJson.get("data"),User::class.java)
+                       Log.d(TAG, "initData: ${data.username}")
+                       userInfoViewModel.user?.postValue(data)
+                       Log.d(TAG, "lalala: ${userInfoViewModel?.user?.value?.username}")
+
+                       Log.d(TAG, "useractivty code:${userInfoViewModel.hashCode()} ")
+                   }else {
+                       showErrorDialog("Cannot find user!")
+                   }
+               }else {
+                   showErrorDialog("Unknow error!")
                }
            }
        }
     }
 
+    private fun showErrorDialog(message: String){
+        alertDialog = AlertDialog.Builder()
+            .setSuccess(false)
+            .title("Alert")
+            .message(message)
+            .onConfirm {
+                alertDialog.dismiss()
+            }
+            .build()
+
+        alertDialog.show(supportFragmentManager, "ALERT")
+    }
+
     override fun setAction() {
-        TODO("Not yet implemented")
     }
 
     private fun setupNavigation(){

@@ -12,6 +12,7 @@ import android.widget.LinearLayout
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.ConfirmationDialog
 import com.example.smartparkinglot.custom.LoadingDialog
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -53,35 +54,6 @@ abstract class BaseActivity: AppCompatActivity() {
     fun showBottomSheet(): BottomSheetDialog{
         val bottomSheet: BottomSheetDialog = BottomSheetDialog(this)
         bottomSheet.setContentView(R.layout.dialog_bottom_sheet)
-//        val btnCamera = bottomSheet.findViewById<LinearLayout>(R.id.btn_camera)
-//        val btnGallery = bottomSheet.findViewById<LinearLayout>(R.id.btn_gallery)
-//        btnCamera?.setOnClickListener{
-//            Log.d("TAG", "camera")
-//            if(checkPermission(this,arrayOf(android.Manifest.permission.CAMERA))){
-//                val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//                if (takePictureIntent.resolveActivity(packageManager)!= null){
-//                    startActivityForResult(takePictureIntent, REQUEST_CAMERA)
-//                }
-//                bottomSheet.dismiss()
-//            }else {
-//                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), REQUEST_CAMERA)
-//            }
-//        }
-//
-//        btnGallery?.setOnClickListener{
-//            Log.d("TAG", "Gallery")
-//            if(checkPermission(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE))){
-//                val gallery1 = Intent()
-//                gallery1.type = "image/*"
-//                gallery1.action = Intent.ACTION_GET_CONTENT
-//                startActivityForResult(Intent.createChooser(gallery1, "choose image"), PICK_IMAGE)
-//                bottomSheet.dismiss()
-//            }else {
-//                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
-//                    REQUEST_FILE)
-//            }
-//        }
-//        bottomSheet.show()
         return bottomSheet
     }
 

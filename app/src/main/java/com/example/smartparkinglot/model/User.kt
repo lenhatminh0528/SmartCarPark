@@ -3,13 +3,16 @@ package com.example.smartparkinglot.model
 import com.google.gson.annotations.SerializedName
 
 data class User(
-    @SerializedName("userName")
-    var name: String,
+    @SerializedName("_id")
+    var id: String,
+    @SerializedName("username")
+    var username: String,
     @SerializedName("address")
     var address: String,
-    @SerializedName("cardId")
+    @SerializedName("idcard")
     var cardId: String,
     @SerializedName("carnum")
     var carNumber: String,
-    var carNumberImg: String,
+    @SerializedName("link_qr")
+    var linkQr: String,
 )

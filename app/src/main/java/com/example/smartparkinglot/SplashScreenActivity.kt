@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.example.smartparkinglot.authentication.AuthActivity
 import com.example.smartparkinglot.dashboard.DashboardActivity
 import com.example.smartparkinglot.databinding.ActivitySplashScreenBinding
@@ -25,20 +26,20 @@ class SplashScreenActivity : BaseActivity() {
     }
 
     override fun setAction() {
-        TODO("Not yet implemented")
     }
 
     private fun alreadyLogin() {
         val userId = AppShareRefs.getUserId(this)
-        if(userId != null){
-            goToDashBoard()
+        if(userId != null && userId !== ""){
+            goToDashBoard(userId)
         }else {
             goToAuthScreen()
         }
     }
 
-    private fun goToDashBoard() {
+    private fun goToDashBoard(userId: String?) {
         val intent = Intent(this, DashboardActivity::class.java)
+        intent.putExtra("user_id", userId)
         startActivity(intent)
     }
 

@@ -8,7 +8,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RESTClient {
-    fun createClient(baseUrl: String): Retrofit {
+    const val BASE_URL = "https://smartparkinglot.herokuapp.com/"
+
+    fun createClient(): Retrofit {
         //Http logging
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
@@ -20,7 +22,7 @@ object RESTClient {
             .addInterceptor(httpLoggingInterceptor)
             .build()
         return Retrofit.Builder()
-            .baseUrl(baseUrl)
+            .baseUrl(BASE_URL)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)

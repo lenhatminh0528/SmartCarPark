@@ -30,10 +30,13 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 
 import androidx.core.content.FileProvider
 import androidx.test.core.app.ApplicationProvider
+import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.LoadingDialog
+import com.example.smartparkinglot.dashboard.DashboardActivity
 import com.example.smartparkinglot.network.APIService
 import com.example.smartparkinglot.network.RESTClient
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,7 +52,7 @@ import java.io.File
 
 
 class RegisterInfoFragment : Fragment() {
-
+    private val TAG = "RegisterInfoFragment"
     companion object {
         private const val REQUEST_CAMERA = 2
         private const val REQUEST_FILE = 1
@@ -60,7 +63,7 @@ class RegisterInfoFragment : Fragment() {
     private var bottomSheet: BottomSheetDialog? = null
     private lateinit var rootActivity: AuthActivity
     private lateinit var binding: FragmentRegisterInfoBinding
-
+    private lateinit var alertDialog: AlertDialog
     private lateinit var startForGalleryResult: ActivityResultLauncher<String>
     private lateinit var startForCameraResult: ActivityResultLauncher<Intent>
 
@@ -210,7 +213,7 @@ class RegisterInfoFragment : Fragment() {
     }
 
     private fun callAPI() {
-        val retrofit = RESTClient.createClient("https://855d-116-110-40-48.ngrok.io")
+        val retrofit = RESTClient.createClient()
         // Create Service
         val service = retrofit.create(APIService::class.java)
 
@@ -249,14 +252,55 @@ class RegisterInfoFragment : Fragment() {
 //                                ?.string() // About this thread blocking annotation : https://github.com/square/retrofit/issues/3255
 //                        )
 //                    )
-                    findNavController().popBackStack()
+
                     loading?.dismiss()
+                    val gson = GsonBuilder().setPrettyPrinting().create()
+                    var prettyJson = gson.fromJson(JsonParser.parseString(
+                        response.body()
+                            ?.string()), JsonObject::class.java)
+                    Log.d(TAG, "callAPI: $prettyJson")
+                    var status = prettyJson.get("status").toString()
+                    var msg = prettyJson.get("msg").toString()
+
+                    if(status.contains("failure")) {
+                        //error cannot login
+                        showErrorDialog(msg)
+                    } else if (status.contains("success")) {
+                        //login successful
+                        showSuccessDialog(msg)
+                    }
                 } else {
                     loading?.dismiss()
                     Log.e("RETROFIT_ERROR", response.code().toString())
                 }
             }
         }
+    }
+
+    private fun showErrorDialog(message: String){
+        alertDialog = AlertDialog.Builder()
+            .setSuccess(false)
+            .title("Alert")
+            .message(message)
+            .onConfirm {
+                alertDialog.dismiss()
+            }
+            .build()
+
+        alertDialog.show(childFragmentManager, "ALERT")
+    }
+
+    private fun showSuccessDialog(message: String) {
+        alertDialog = AlertDialog.Builder()
+            .setSuccess(true)
+            .title("Successful")
+            .message(message)
+            .onConfirm {
+                findNavController().popBackStack()
+                alertDialog.dismiss()
+            }
+            .build()
+        alertDialog.show(childFragmentManager, "ALERT")
     }
 
 }
