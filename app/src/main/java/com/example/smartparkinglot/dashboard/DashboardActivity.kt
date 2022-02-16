@@ -18,6 +18,7 @@ import com.example.smartparkinglot.AppShareRefs
 import com.example.smartparkinglot.BaseActivity
 import com.example.smartparkinglot.R
 import com.example.smartparkinglot.custom.AlertDialog
+import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
 import com.example.smartparkinglot.databinding.ActivityDashboardBinding
 import com.example.smartparkinglot.model.User
@@ -43,6 +44,7 @@ class DashboardActivity : BaseActivity() {
     private lateinit var binding: ActivityDashboardBinding
     private lateinit var alertDialog: AlertDialog
     private lateinit var userInfoViewModel: UserInfoViewModel
+    private lateinit var loadingDialog : LoadingDialog
     override fun bindingView() {
         supportActionBar?.hide()
         binding = ActivityDashboardBinding.inflate(layoutInflater)
@@ -52,10 +54,10 @@ class DashboardActivity : BaseActivity() {
     }
 
     override fun initData() {
-//        val userId = AppShareRefs.getUserId(this)
         //call API
-        var userId: String = intent.extras?.get("user_id").toString()
-        Log.d(TAG, "initData: $userId")
+        loadingDialog = showLoadingDialog()
+        val userId: String = intent.extras?.get("user_id").toString()
+
        CoroutineScope(Dispatchers.IO).launch{
            //JSON using JSONObject
            val jsonObject = JSONObject()
@@ -63,11 +65,6 @@ class DashboardActivity : BaseActivity() {
                put("col", "user")
                put("id", userId)
            }
-           // Convert JSONObject to String
-           val jsonObjectString = jsonObject.toString()
-
-           // Create RequestBody ( We're not using any converter, like GsonConverter, MoshiConverter e.t.c, that's why we use RequestBody )
-           val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
 
            val response = RESTClient.createClient()
                .create(APIService::class.java)
@@ -75,29 +72,32 @@ class DashboardActivity : BaseActivity() {
 
            withContext(Dispatchers.Main){
                if(response.isSuccessful){
+                   loadingDialog.dismiss()
                    val gson = GsonBuilder().setPrettyPrinting().create()
 
-                   var prettyJson = gson.fromJson(
+                   val prettyJson = gson.fromJson(
                        JsonParser.parseString(
                        response.body()
                            ?.string()), JsonObject::class.java)
-                   Log.d(TAG, "initData: $prettyJson")
-                   val status: String = prettyJson.get("status").toString()
-                   if(status.contains("success")){
-                       val data =  gson.fromJson(prettyJson.get("data"),User::class.java)
-                       Log.d(TAG, "initData: ${data.username}")
-                       userInfoViewModel.user?.postValue(data)
-                       Log.d(TAG, "lalala: ${userInfoViewModel?.user?.value?.username}")
 
-                       Log.d(TAG, "useractivty code:${userInfoViewModel.hashCode()} ")
+                   val status: String = prettyJson.get("status").toString()
+
+                   if(status.contains("success")){
+                       val data = gson.fromJson(prettyJson.get("data"),User::class.java)
+                       userInfoViewModel.user.postValue(data)
                    }else {
                        showErrorDialog("Cannot find user!")
                    }
                }else {
+                   loadingDialog.dismiss()
                    showErrorDialog("Unknow error!")
                }
            }
        }
+
+        userInfoViewModel.user.observe(this, {
+
+        })
     }
 
     private fun showErrorDialog(message: String){
