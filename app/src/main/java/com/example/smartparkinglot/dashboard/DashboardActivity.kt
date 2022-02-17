@@ -54,6 +54,19 @@ class DashboardActivity : BaseActivity() {
         setupNavigation()
     }
 
+    private fun showErrorDialog(message: String){
+        alertDialog = AlertDialog.Builder()
+            .setSuccess(false)
+            .title("Alert")
+            .message(message)
+            .onConfirm {
+                alertDialog.dismiss()
+            }
+            .build()
+
+        alertDialog.show(supportFragmentManager, "ALERT")
+    }
+
     override fun initData() {
         //call API
         loadingDialog = showLoadingDialog()
@@ -71,60 +84,15 @@ class DashboardActivity : BaseActivity() {
                 is Result.Error -> {
                    withContext(Dispatchers.Main) {
                        loadingDialog.dismiss()
+                       showErrorDialog(result.exception.message ?: "Something went wrong!")
                        Log.d(TAG, "callback sealed class: ${result.exception.message}")
                    }
                 }
             }
         }
-//       CoroutineScope(Dispatchers.IO).launch{
-//           //JSON using JSONObject
-//           val jsonObject = JSONObject()
-//           with(jsonObject){
-//               put("col", "user")
-//               put("id", userId)
-//           }
-//
-//           val response = RESTClient.getApi()
-//               .showDB("user", userId.substring(1, userId.length - 1))
-//
-//           withContext(Dispatchers.Main){
-//               if(response.isSuccessful){
-//                   loadingDialog.dismiss()
-//                   val gson = GsonBuilder().setPrettyPrinting().create()
-//
-//                   val prettyJson = gson.fromJson(
-//                       JsonParser.parseString(
-//                       response.body()
-//                           ?.string()), JsonObject::class.java)
-//
-//                   val status: String = prettyJson.get("status").toString()
-//
-//                   if(status.contains("success")){
-//                       val data = gson.fromJson(prettyJson.get("data"),User::class.java)
-//                       userInfoViewModel.user.postValue(data)
-//                   }else {
-//                       showErrorDialog("Cannot find user!")
-//                   }
-//               }else {
-//                   loadingDialog.dismiss()
-//                   showErrorDialog("Unknow error!")
-//               }
-//           }
-//       }
     }
 
-    private fun showErrorDialog(message: String){
-        alertDialog = AlertDialog.Builder()
-            .setSuccess(false)
-            .title("Alert")
-            .message(message)
-            .onConfirm {
-                alertDialog.dismiss()
-            }
-            .build()
 
-        alertDialog.show(supportFragmentManager, "ALERT")
-    }
 
     override fun setAction() {
     }

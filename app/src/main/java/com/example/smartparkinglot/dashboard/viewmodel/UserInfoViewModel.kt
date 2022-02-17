@@ -24,7 +24,7 @@ class UserInfoViewModel: ViewModel() {
     suspend fun fetchData(userId: String): Result<User>{
 
             //JSON using JSONObject
-        try {
+        return try {
             val jsonObject = JSONObject()
             with(jsonObject){
                 put("col", "user")
@@ -47,22 +47,21 @@ class UserInfoViewModel: ViewModel() {
                     if(status.contains("success")){
                         val data = gson.fromJson(prettyJson.get("data"),User::class.java)
                         user.value = data
-                        return@withContext Result.Success(data, "Fetch user successful!")
+                        Result.Success(data, "Fetch user successful!")
 
                     }else {
-                        return@withContext Result.Error(Exception("Something went wrong!"))
+                        Result.Error(Exception("Something went wrong!"))
                     }
                 }
             } else {
                 withContext(Dispatchers.Main){
-                    return@withContext Result.Error(Exception("Something went wrong!"))
+                    Result.Error(Exception("Something went wrong!"))
                 }
             }
         } catch (exception: Exception) {
                 withContext(Dispatchers.Main) {
-                    return@withContext Result.Error(exception)
+                    Result.Error(exception)
                 }
-
         }
     }
 
