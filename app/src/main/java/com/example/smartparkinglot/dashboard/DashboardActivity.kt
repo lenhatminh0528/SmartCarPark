@@ -1,5 +1,9 @@
 package com.example.smartparkinglot.dashboard
 
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -25,6 +29,7 @@ import com.example.smartparkinglot.databinding.ActivityDashboardBinding
 import com.example.smartparkinglot.model.User
 import com.example.smartparkinglot.network.APIService
 import com.example.smartparkinglot.network.RESTClient
+import com.example.smartparkinglot.utils.NetworkUtils
 import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -46,6 +51,23 @@ class DashboardActivity : BaseActivity() {
     private lateinit var alertDialog: AlertDialog
     private lateinit var userInfoViewModel: UserInfoViewModel
     private lateinit var loadingDialog : LoadingDialog
+
+    private val networkRequest = NetworkRequest.Builder()
+        .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        .addCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+        .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+        .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+        .build()
+
+    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
+        override fun onAvailable(network: Network) {
+            super.onAvailable(network)
+            Log.d(TAG, "onAvailable: network connecting")
+            alertDialog.dismiss()
+            getFirstData()
+        }
+
+    }
     override fun bindingView() {
         supportActionBar?.hide()
         binding = ActivityDashboardBinding.inflate(layoutInflater)
@@ -68,33 +90,42 @@ class DashboardActivity : BaseActivity() {
     }
 
     override fun initData() {
-        //call API
-        loadingDialog = showLoadingDialog()
-        val userId: String = intent.extras?.get("user_id").toString()
-
-        CoroutineScope(Dispatchers.IO).launch {
-            when (val result = userInfoViewModel.fetchData(userId)) {
-                is Result.Success -> {
-                    withContext(Dispatchers.Main) {
-                        loadingDialog.dismiss()
-                        Log.d(TAG, "callback sealed class: ${result.data.username}")
-                    }
-                }
-
-                is Result.Error -> {
-                   withContext(Dispatchers.Main) {
-                       loadingDialog.dismiss()
-                       showErrorDialog(result.exception.message ?: "Something went wrong!")
-                       Log.d(TAG, "callback sealed class: ${result.exception.message}")
-                   }
-                }
-            }
-        }
+        //connect wifi
+        val connectivityManager = getSystemService(ConnectivityManager::class.java)
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
 
 
     override fun setAction() {
+        getFirstData()
+    }
+
+    private fun getFirstData() {
+        //call API
+        loadingDialog = showLoadingDialog()
+
+        if(!NetworkUtils.isNetworkConnect(this)) {
+            loadingDialog.dismiss()
+            showErrorDialog("No network connection!")
+        } else {
+            val userId: String = intent.extras?.get("user_id").toString()
+            CoroutineScope(Dispatchers.IO).launch {
+                when (val result = userInfoViewModel.fetchData(userId)) {
+                    is Result.Success -> {
+                        withContext(Dispatchers.Main) {
+                            loadingDialog.dismiss()
+                        }
+                    }
+                    is Result.Error -> {
+                        withContext(Dispatchers.Main) {
+                            loadingDialog.dismiss()
+                            showErrorDialog(result.exception.message ?: "Something went wrong!")
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun setupNavigation(){

@@ -19,7 +19,7 @@ class RESTClient {
             }
         }
 
-        fun createClient(): APIService {
+        private fun createClient(): APIService {
             //Http logging
             val httpLoggingInterceptor = HttpLoggingInterceptor()
             httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY

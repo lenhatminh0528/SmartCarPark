@@ -19,6 +19,7 @@ import com.example.smartparkinglot.dashboard.DashboardActivity
 import com.example.smartparkinglot.databinding.FragmentLoginBinding
 import com.example.smartparkinglot.network.APIService
 import com.example.smartparkinglot.network.RESTClient
+import com.example.smartparkinglot.utils.NetworkUtils
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -79,8 +80,18 @@ class LoginFragment : Fragment() {
     private fun handleBtnLogin() {
         binding.username.clearFocus()
         binding.password.clearFocus()
-        rootActivity.showBottomSheet()
 
+        showLoading()
+
+        if(!NetworkUtils.isNetworkConnect(requireContext())) {
+            showErrorDialog("No network connection!")
+        } else {
+            callAPI()
+        }
+    }
+
+    private fun callAPI() {
+        // call api
         val userName = binding.username.text
         val password = binding.password.text
 
@@ -89,14 +100,12 @@ class LoginFragment : Fragment() {
             put("username", userName)
             put("password", password)
         }
-        showLoading()
-        // call api
         CoroutineScope(Dispatchers.IO).launch {
 
             val response = RESTClient.getApi()
                 .signIn(jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull()))
-            withContext(Dispatchers.Main){
-                if(response.isSuccessful){
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
                     loading?.dismiss()
                     // Convert raw JSON to pretty JSON using GSON library
 
@@ -108,33 +117,35 @@ class LoginFragment : Fragment() {
 //                        )
 //                    )
                     try {
-                        var prettyJson = gson.fromJson(JsonParser.parseString(
-                            response.body()
-                                ?.string()), JsonObject::class.java)
+                        var prettyJson = gson.fromJson(
+                            JsonParser.parseString(
+                                response.body()
+                                    ?.string()
+                            ), JsonObject::class.java
+                        )
 
                         var status = prettyJson.get("status").toString()
-                        if(status.contains("failure")) {
+                        if (status.contains("failure")) {
                             var msg = prettyJson.get("msg").toString()
                             //error cannot login
                             showErrorDialog(msg)
                         } else if (status.contains("success")) {
                             //login successful
                             var id = prettyJson.get("id_user").toString()
-                            AppShareRefs.setUserId(rootActivity,id)
+                            AppShareRefs.setUserId(rootActivity, id)
                             val intent = Intent(rootActivity, DashboardActivity::class.java)
                             intent.putExtra("user_id", id)
                             startActivity(intent)
                         }
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         Log.d("ERROR", e.toString())
                     }
 
-                }else {
+                } else {
                     loading?.dismiss()
                     Log.e("RETROFIT_ERROR", response.code().toString())
                 }
             }
-
         }
     }
 

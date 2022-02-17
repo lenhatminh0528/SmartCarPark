@@ -35,6 +35,7 @@ import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.dashboard.DashboardActivity
 import com.example.smartparkinglot.network.APIService
 import com.example.smartparkinglot.network.RESTClient
+import com.example.smartparkinglot.utils.NetworkUtils
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
@@ -184,7 +185,12 @@ class RegisterInfoFragment : Fragment() {
         clearFocus()
         if(isValidate()){
             showLoading()
-            callAPI()
+            if(!NetworkUtils.isNetworkConnect(requireContext())){
+                loading?.dismiss()
+                showErrorDialog("No network connection!")
+            } else {
+                callAPI()
+            }
         }
     }
 
@@ -215,7 +221,6 @@ class RegisterInfoFragment : Fragment() {
     }
 
     private fun callAPI() {
-        val retrofit = RESTClient.createClient()
         // Create Service
         val service = RESTClient.getApi()
 
