@@ -7,25 +7,40 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-object RESTClient {
-    const val BASE_URL = "https://smartparkinglot.herokuapp.com/"
+class RESTClient {
 
-    fun createClient(): Retrofit {
-        //Http logging
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+    companion object {
+        const val BASE_URL = "https://smartparkinglot.herokuapp.com/"
+        private var api: APIService? = null
 
-        //Add the interceptor to the client builder
-        val client = OkHttpClient.Builder()
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .addInterceptor(httpLoggingInterceptor)
-            .build()
-        return Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(client)
-            .build()
+        fun getApi() : APIService = api ?: synchronized(this) {
+            api ?: createClient().also {
+                api = it
+            }
+        }
+
+        fun createClient(): APIService {
+            //Http logging
+            val httpLoggingInterceptor = HttpLoggingInterceptor()
+            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+
+            //Add the interceptor to the client builder
+            val client = OkHttpClient.Builder()
+                .connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .addInterceptor(httpLoggingInterceptor)
+                .build()
+            val retrofit: Retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(client)
+                .build()
+
+            return retrofit.create(APIService::class.java)
+        }
     }
+
+
+
 }

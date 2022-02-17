@@ -93,8 +93,7 @@ class LoginFragment : Fragment() {
         // call api
         CoroutineScope(Dispatchers.IO).launch {
 
-            val response = RESTClient.createClient()
-                .create(APIService::class.java)
+            val response = RESTClient.getApi()
                 .signIn(jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull()))
             withContext(Dispatchers.Main){
                 if(response.isSuccessful){

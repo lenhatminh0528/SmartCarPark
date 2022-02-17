@@ -182,8 +182,8 @@ class RegisterInfoFragment : Fragment() {
 
     private fun handleRegister() {
         clearFocus()
-        showLoading()
         if(isValidate()){
+            showLoading()
             callAPI()
         }
     }
@@ -201,10 +201,12 @@ class RegisterInfoFragment : Fragment() {
             binding.edtPassword.requestFocus()
             return false
         }
+
         if(binding.edtCardId.text?.isEmpty() == true){
             binding.edtCardId.requestFocus()
             return false
         }
+
         if(binding.edtCarNumber.text?.isEmpty() == true){
             binding.edtCarNumber.requestFocus()
             return false
@@ -215,7 +217,7 @@ class RegisterInfoFragment : Fragment() {
     private fun callAPI() {
         val retrofit = RESTClient.createClient()
         // Create Service
-        val service = retrofit.create(APIService::class.java)
+        val service = RESTClient.getApi()
 
         val userName = binding.edtUsername.text
         val password = binding.edtPassword.text
@@ -244,15 +246,6 @@ class RegisterInfoFragment : Fragment() {
 
             withContext(Dispatchers.Main) {
                 if (response.isSuccessful) {
-                    // Convert raw JSON to pretty JSON using GSON library
-//                    val gson = GsonBuilder().setPrettyPrinting().create()
-//                    val prettyJson = gson.toJson(
-//                        JsonParser.parseString(
-//                            response.body()
-//                                ?.string() // About this thread blocking annotation : https://github.com/square/retrofit/issues/3255
-//                        )
-//                    )
-
                     loading?.dismiss()
                     val gson = GsonBuilder().setPrettyPrinting().create()
                     var prettyJson = gson.fromJson(JsonParser.parseString(

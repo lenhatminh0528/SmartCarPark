@@ -17,6 +17,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.example.smartparkinglot.AppShareRefs
 import com.example.smartparkinglot.BaseActivity
 import com.example.smartparkinglot.R
+import com.example.smartparkinglot.Result
 import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
@@ -58,46 +59,58 @@ class DashboardActivity : BaseActivity() {
         loadingDialog = showLoadingDialog()
         val userId: String = intent.extras?.get("user_id").toString()
 
-       CoroutineScope(Dispatchers.IO).launch{
-           //JSON using JSONObject
-           val jsonObject = JSONObject()
-           with(jsonObject){
-               put("col", "user")
-               put("id", userId)
-           }
+        CoroutineScope(Dispatchers.IO).launch {
+            when (val result = userInfoViewModel.fetchData(userId)) {
+                is Result.Success -> {
+                    withContext(Dispatchers.Main) {
+                        loadingDialog.dismiss()
+                        Log.d(TAG, "callback sealed class: ${result.data.username}")
+                    }
+                }
 
-           val response = RESTClient.createClient()
-               .create(APIService::class.java)
-               .showDB("user", userId.substring(1, userId.length - 1))
-
-           withContext(Dispatchers.Main){
-               if(response.isSuccessful){
-                   loadingDialog.dismiss()
-                   val gson = GsonBuilder().setPrettyPrinting().create()
-
-                   val prettyJson = gson.fromJson(
-                       JsonParser.parseString(
-                       response.body()
-                           ?.string()), JsonObject::class.java)
-
-                   val status: String = prettyJson.get("status").toString()
-
-                   if(status.contains("success")){
-                       val data = gson.fromJson(prettyJson.get("data"),User::class.java)
-                       userInfoViewModel.user.postValue(data)
-                   }else {
-                       showErrorDialog("Cannot find user!")
+                is Result.Error -> {
+                   withContext(Dispatchers.Main) {
+                       loadingDialog.dismiss()
+                       Log.d(TAG, "callback sealed class: ${result.exception.message}")
                    }
-               }else {
-                   loadingDialog.dismiss()
-                   showErrorDialog("Unknow error!")
-               }
-           }
-       }
-
-        userInfoViewModel.user.observe(this, {
-
-        })
+                }
+            }
+        }
+//       CoroutineScope(Dispatchers.IO).launch{
+//           //JSON using JSONObject
+//           val jsonObject = JSONObject()
+//           with(jsonObject){
+//               put("col", "user")
+//               put("id", userId)
+//           }
+//
+//           val response = RESTClient.getApi()
+//               .showDB("user", userId.substring(1, userId.length - 1))
+//
+//           withContext(Dispatchers.Main){
+//               if(response.isSuccessful){
+//                   loadingDialog.dismiss()
+//                   val gson = GsonBuilder().setPrettyPrinting().create()
+//
+//                   val prettyJson = gson.fromJson(
+//                       JsonParser.parseString(
+//                       response.body()
+//                           ?.string()), JsonObject::class.java)
+//
+//                   val status: String = prettyJson.get("status").toString()
+//
+//                   if(status.contains("success")){
+//                       val data = gson.fromJson(prettyJson.get("data"),User::class.java)
+//                       userInfoViewModel.user.postValue(data)
+//                   }else {
+//                       showErrorDialog("Cannot find user!")
+//                   }
+//               }else {
+//                   loadingDialog.dismiss()
+//                   showErrorDialog("Unknow error!")
+//               }
+//           }
+//       }
     }
 
     private fun showErrorDialog(message: String){

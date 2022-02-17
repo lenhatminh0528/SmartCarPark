@@ -45,7 +45,6 @@ class QrCodeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         userInfoViewModel.user.observe(viewLifecycleOwner, {
-            Log.d(TAG, "iimage: ${RESTClient.BASE_URL + it?.linkQr}")
             var picasso = Picasso.get()
             picasso.isLoggingEnabled = true
             picasso.load(RESTClient.BASE_URL + it?.linkQr)
