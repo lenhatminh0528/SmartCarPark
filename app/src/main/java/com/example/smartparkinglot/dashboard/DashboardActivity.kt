@@ -48,9 +48,10 @@ class DashboardActivity : BaseActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityDashboardBinding
-    private lateinit var alertDialog: AlertDialog
+    private var alertDialog: AlertDialog? = null
     private lateinit var userInfoViewModel: UserInfoViewModel
-    private lateinit var loadingDialog : LoadingDialog
+    private var loadingDialog : LoadingDialog? = null
+    private lateinit var networkCallback : ConnectivityManager.NetworkCallback
 
     private val networkRequest = NetworkRequest.Builder()
         .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
@@ -59,15 +60,6 @@ class DashboardActivity : BaseActivity() {
         .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
         .build()
 
-    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
-        override fun onAvailable(network: Network) {
-            super.onAvailable(network)
-            Log.d(TAG, "onAvailable: network connecting")
-            alertDialog.dismiss()
-            getFirstData()
-        }
-
-    }
     override fun bindingView() {
         supportActionBar?.hide()
         binding = ActivityDashboardBinding.inflate(layoutInflater)
@@ -82,23 +74,39 @@ class DashboardActivity : BaseActivity() {
             .title("Alert")
             .message(message)
             .onConfirm {
-                alertDialog.dismiss()
+                alertDialog?.dismiss()
             }
             .build()
 
-        alertDialog.show(supportFragmentManager, "ALERT")
+        alertDialog?.show(supportFragmentManager, "ALERT")
     }
 
     override fun initData() {
+
+    }
+
+    private fun setupWifiConnection() {
         //connect wifi
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                super.onAvailable(network)
+                Log.d(TAG, "onAvailable: network connecting")
+                alertDialog?.dismiss()
+                getFirstData()
+            }
+
+            override fun onLost(network: Network) {
+                super.onLost(network)
+                Log.d(TAG, "onLost: ")
+                showErrorDialog("No network connection!")
+            }
+        }
         val connectivityManager = getSystemService(ConnectivityManager::class.java)
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
-
-
     override fun setAction() {
-        getFirstData()
+        setupWifiConnection()
     }
 
     private fun getFirstData() {
@@ -106,7 +114,7 @@ class DashboardActivity : BaseActivity() {
         loadingDialog = showLoadingDialog()
 
         if(!NetworkUtils.isNetworkConnect(this)) {
-            loadingDialog.dismiss()
+            loadingDialog?.dismiss()
             showErrorDialog("No network connection!")
         } else {
             val userId: String = intent.extras?.get("user_id").toString()
@@ -114,12 +122,12 @@ class DashboardActivity : BaseActivity() {
                 when (val result = userInfoViewModel.fetchData(userId)) {
                     is Result.Success -> {
                         withContext(Dispatchers.Main) {
-                            loadingDialog.dismiss()
+                            loadingDialog?.dismiss()
                         }
                     }
                     is Result.Error -> {
                         withContext(Dispatchers.Main) {
-                            loadingDialog.dismiss()
+                            loadingDialog?.dismiss()
                             showErrorDialog(result.exception.message ?: "Something went wrong!")
                         }
                     }
@@ -141,4 +149,5 @@ class DashboardActivity : BaseActivity() {
             NavigationUI.setupWithNavController(it, navController)
         }
     }
+
 }
