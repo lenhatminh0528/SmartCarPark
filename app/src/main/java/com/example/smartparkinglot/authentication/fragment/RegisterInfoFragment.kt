@@ -29,7 +29,10 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 
 import androidx.core.content.FileProvider
+import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ApplicationProvider
+import com.example.smartparkinglot.Result
+import com.example.smartparkinglot.authentication.viewmodel.RegistererInfoViewModel
 import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.dashboard.DashboardActivity
@@ -64,6 +67,7 @@ class RegisterInfoFragment : Fragment() {
     private var bottomSheet: BottomSheetDialog? = null
     private lateinit var rootActivity: AuthActivity
     private lateinit var binding: FragmentRegisterInfoBinding
+    private lateinit var viewModel : RegistererInfoViewModel
     private lateinit var alertDialog: AlertDialog
     private lateinit var startForGalleryResult: ActivityResultLauncher<String>
     private lateinit var startForCameraResult: ActivityResultLauncher<Intent>
@@ -73,8 +77,9 @@ class RegisterInfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentRegisterInfoBinding.inflate(inflater, container, false)
+        viewModel = ViewModelProvider(this).get(RegistererInfoViewModel::class.java)
         rootActivity = activity as AuthActivity
-
+        binding.viewModel = viewModel
         return binding.root
     }
 
@@ -122,7 +127,7 @@ class RegisterInfoFragment : Fragment() {
                 )
             ) {
                 //request camera
-                var cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 startForCameraResult.launch(cameraIntent)
             } else {
                 ActivityCompat.requestPermissions(
@@ -189,7 +194,14 @@ class RegisterInfoFragment : Fragment() {
                 loading?.dismiss()
                 showErrorDialog("No network connection!")
             } else {
-                callAPI()
+                CoroutineScope(Dispatchers.IO).launch {
+                    when(val result = viewModel.callAPI()){
+                        is Result.Success ->
+                            showSuccessDialog("Register ${viewModel.username.value} successful!")
+                        is Result.Error ->
+                            result.exception.message?.let { showErrorDialog(it) }
+                    }
+                }
             }
         }
     }
@@ -218,61 +230,6 @@ class RegisterInfoFragment : Fragment() {
             return false
         }
         return true
-    }
-
-    private fun callAPI() {
-        // Create Service
-        val service = RESTClient.getApi()
-
-        val userName = binding.edtUsername.text
-        val password = binding.edtPassword.text
-        val idCard = binding.edtCardId.text
-        val carnum = binding.edtCarNumber.text
-        val address= if(binding.edtAddress.text?.isNotEmpty() == true) binding.edtAddress.text else ""
-
-        // Create JSON using JSONObject
-        val jsonObject = JSONObject()
-            with(jsonObject){
-                put("username", userName)
-                put("password", password)
-                put("address", address)
-                put("idcard", idCard)
-                put("carnum", carnum)
-            }
-        // Convert JSONObject to String
-        val jsonObjectString = jsonObject.toString()
-
-        // Create RequestBody ( We're not using any converter, like GsonConverter, MoshiConverter e.t.c, that's why we use RequestBody )
-        val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
-
-        CoroutineScope(Dispatchers.IO).launch {
-            // Do the POST request and get response
-            val response = service.signUp(requestBody)
-
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    loading?.dismiss()
-                    val gson = GsonBuilder().setPrettyPrinting().create()
-                    var prettyJson = gson.fromJson(JsonParser.parseString(
-                        response.body()
-                            ?.string()), JsonObject::class.java)
-                    Log.d(TAG, "callAPI: $prettyJson")
-                    var status = prettyJson.get("status").toString()
-                    var msg = prettyJson.get("msg").toString()
-
-                    if(status.contains("failure")) {
-                        //error cannot login
-                        showErrorDialog(msg)
-                    } else if (status.contains("success")) {
-                        //login successful
-                        showSuccessDialog(msg)
-                    }
-                } else {
-                    loading?.dismiss()
-                    Log.e("RETROFIT_ERROR", response.code().toString())
-                }
-            }
-        }
     }
 
     private fun showErrorDialog(message: String){
