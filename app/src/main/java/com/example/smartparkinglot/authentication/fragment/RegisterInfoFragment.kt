@@ -57,6 +57,7 @@ import java.io.File
 
 class RegisterInfoFragment : Fragment() {
     private val TAG = "RegisterInfoFragment"
+
     companion object {
         private const val REQUEST_CAMERA = 2
         private const val REQUEST_FILE = 1

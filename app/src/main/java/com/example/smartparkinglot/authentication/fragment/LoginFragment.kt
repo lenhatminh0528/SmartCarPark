@@ -8,10 +8,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.example.smartparkinglot.AppShareRefs
+import com.example.smartparkinglot.Result
 import com.example.smartparkinglot.hideKeyboard
 import com.example.smartparkinglot.authentication.AuthActivity
+import com.example.smartparkinglot.authentication.viewmodel.LoginViewModel
 import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.ConfirmationDialog
 import com.example.smartparkinglot.custom.LoadingDialog
@@ -24,10 +27,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.fragment_login.view.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
@@ -40,6 +40,7 @@ class LoginFragment : Fragment() {
     private lateinit var binding: FragmentLoginBinding
     private lateinit var rootActivity: AuthActivity
     private lateinit var alertDialog: AlertDialog
+    private lateinit var viewModel : LoginViewModel
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -48,6 +49,8 @@ class LoginFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentLoginBinding.inflate(inflater, container, false)
         rootActivity = activity as AuthActivity
+        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+        binding.viewModel = viewModel
         return binding.root
 
     }
@@ -81,72 +84,36 @@ class LoginFragment : Fragment() {
         binding.username.clearFocus()
         binding.password.clearFocus()
 
+        if (!isValidate()) return
         showLoading()
-
         if(!NetworkUtils.isNetworkConnect(requireContext())) {
             showErrorDialog("No network connection!")
         } else {
-            callAPI()
-        }
-    }
-
-    private fun callAPI() {
-        // call api
-        val userName = binding.username.text
-        val password = binding.password.text
-
-        val jsonObject = JSONObject()
-        with(jsonObject){
-            put("username", userName)
-            put("password", password)
-        }
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val response = RESTClient.getApi()
-                .signIn(jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull()))
-            withContext(Dispatchers.Main) {
-                if (response.isSuccessful) {
-                    loading?.dismiss()
-                    // Convert raw JSON to pretty JSON using GSON library
-
-                    val gson = GsonBuilder().setPrettyPrinting().create()
-//                    val prettyJson = gson.toJson(
-//                        JsonParser.parseString(
-//                            response.body()
-//                                ?.string() // About this thread blocking annotation : https://github.com/square/retrofit/issues/3255
-//                        )
-//                    )
-                    try {
-                        var prettyJson = gson.fromJson(
-                            JsonParser.parseString(
-                                response.body()
-                                    ?.string()
-                            ), JsonObject::class.java
-                        )
-
-                        var status = prettyJson.get("status").toString()
-                        if (status.contains("failure")) {
-                            var msg = prettyJson.get("msg").toString()
-                            //error cannot login
-                            showErrorDialog(msg)
-                        } else if (status.contains("success")) {
-                            //login successful
-                            var id = prettyJson.get("id_user").toString()
-                            AppShareRefs.setUserId(rootActivity, id)
-                            val intent = Intent(rootActivity, DashboardActivity::class.java)
-                            intent.putExtra("user_id", id)
-                            startActivity(intent)
-                        }
-                    } catch (e: Exception) {
-                        Log.d("ERROR", e.toString())
+            CoroutineScope(Dispatchers.IO).launch {
+                when(val result = viewModel.callAPI()) {
+                    is Result.Success -> {
+                        result.data?.let { AppShareRefs.setUserId(rootActivity, it) }
+                        val intent = Intent(rootActivity, DashboardActivity::class.java)
+                        intent.putExtra("user_id", id)
+                        startActivity(intent)
                     }
-
-                } else {
-                    loading?.dismiss()
-                    Log.e("RETROFIT_ERROR", response.code().toString())
+                    is Result.Error ->
+                        result.exception.message?.let { showErrorDialog(it) }
                 }
             }
         }
+    }
+
+    private fun isValidate() : Boolean {
+        if(binding.username.text?.isEmpty() == true){
+            binding.username.requestFocus()
+            return false
+        }
+        if(binding.password.text?.isEmpty() == true){
+            binding.password.requestFocus()
+            return false
+        }
+        return true
     }
 
     private fun showLoading(){
@@ -179,7 +146,6 @@ class LoginFragment : Fragment() {
             .build()
         alertDialog.show(childFragmentManager, "ALERT")
     }
-
 
     private fun showConfirmDialog(){
         mConfirmationDialog = rootActivity.showConfirmationDialog("Confirmation",
