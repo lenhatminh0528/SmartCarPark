@@ -1,18 +1,14 @@
 package com.example.smartparkinglot.dashboard.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.smartparkinglot.Result
 import com.example.smartparkinglot.model.User
-import com.example.smartparkinglot.network.APIService
-import com.example.smartparkinglot.network.RESTClient
+import com.example.smartparkinglot.retrofit.RESTClient
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.lang.Exception
@@ -20,9 +16,9 @@ import java.lang.Exception
 class UserInfoViewModel: ViewModel() {
     private val TAG = "UserInfoViewModel"
     var user = MutableLiveData<User?>()
+    var errorMessage = MutableLiveData<String>()
 
     suspend fun fetchData(userId: String): Result<User>{
-
             //JSON using JSONObject
         return try {
             val jsonObject = JSONObject()

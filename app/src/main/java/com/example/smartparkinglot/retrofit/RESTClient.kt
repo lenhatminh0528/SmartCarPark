@@ -1,4 +1,4 @@
-package com.example.smartparkinglot.network
+package com.example.smartparkinglot.retrofit
 
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

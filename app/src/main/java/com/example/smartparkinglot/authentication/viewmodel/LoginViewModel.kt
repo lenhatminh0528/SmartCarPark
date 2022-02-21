@@ -3,7 +3,7 @@ package com.example.smartparkinglot.authentication.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.smartparkinglot.Result
-import com.example.smartparkinglot.network.RESTClient
+import com.example.smartparkinglot.retrofit.RESTClient
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

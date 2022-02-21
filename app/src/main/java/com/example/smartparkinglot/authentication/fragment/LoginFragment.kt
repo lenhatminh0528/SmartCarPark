@@ -3,7 +3,6 @@ package com.example.smartparkinglot.authentication.fragment
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -20,18 +19,9 @@ import com.example.smartparkinglot.custom.ConfirmationDialog
 import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.dashboard.DashboardActivity
 import com.example.smartparkinglot.databinding.FragmentLoginBinding
-import com.example.smartparkinglot.network.APIService
-import com.example.smartparkinglot.network.RESTClient
 import com.example.smartparkinglot.utils.NetworkUtils
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.coroutines.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
-import java.lang.Exception
 
 class LoginFragment : Fragment() {
     private val TAG = "LoginFragment"

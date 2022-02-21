@@ -1,4 +1,4 @@
-package com.example.smartparkinglot.network
+package com.example.smartparkinglot.retrofit
 
 import android.content.BroadcastReceiver
 import android.content.Context

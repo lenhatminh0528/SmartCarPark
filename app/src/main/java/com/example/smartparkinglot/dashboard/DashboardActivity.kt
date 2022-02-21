@@ -4,21 +4,14 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.util.Log
-import android.view.MenuItem
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import com.example.smartparkinglot.AppShareRefs
 import com.example.smartparkinglot.BaseActivity
 import com.example.smartparkinglot.R
 import com.example.smartparkinglot.Result
@@ -26,22 +19,12 @@ import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
 import com.example.smartparkinglot.databinding.ActivityDashboardBinding
-import com.example.smartparkinglot.model.User
-import com.example.smartparkinglot.network.APIService
-import com.example.smartparkinglot.network.RESTClient
 import com.example.smartparkinglot.utils.NetworkUtils
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
 
 class DashboardActivity : BaseActivity() {
     private val TAG = "DashboardActivity"

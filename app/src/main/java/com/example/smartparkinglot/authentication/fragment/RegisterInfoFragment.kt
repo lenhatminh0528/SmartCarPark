@@ -2,7 +2,6 @@ package com.example.smartparkinglot.authentication.fragment
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
@@ -20,39 +19,20 @@ import com.example.smartparkinglot.authentication.AuthActivity
 import com.example.smartparkinglot.databinding.FragmentRegisterInfoBinding
 import com.example.smartparkinglot.hideKeyboard
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.android.synthetic.main.fragment_register_info.view.*
-import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.net.Uri
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 
-import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
-import androidx.test.core.app.ApplicationProvider
 import com.example.smartparkinglot.Result
 import com.example.smartparkinglot.authentication.viewmodel.RegistererInfoViewModel
 import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.LoadingDialog
-import com.example.smartparkinglot.dashboard.DashboardActivity
-import com.example.smartparkinglot.network.APIService
-import com.example.smartparkinglot.network.RESTClient
 import com.example.smartparkinglot.utils.NetworkUtils
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
-import retrofit2.Retrofit
 
 //import androidx.test.orchestrator.junit.BundleJUnitUtils.getResult
-import java.io.File
 
 
 class RegisterInfoFragment : Fragment() {

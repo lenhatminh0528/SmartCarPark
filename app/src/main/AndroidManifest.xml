@@ -32,7 +32,7 @@
             android:name=".authentication.AuthActivity"
             android:exported="false" />
 
-        <receiver android:name=".network.WifiBroadCastReceiver">
+        <receiver android:name=".retrofit.WifiBroadCastReceiver">
             <intent-filter android:priority="100">
                 <action android:name="android.net.wifi.STATE_CHANGE"/>
             </intent-filter>

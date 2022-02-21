@@ -1,15 +1,11 @@
-package com.example.smartparkinglot.network
+package com.example.smartparkinglot.retrofit
 
-import com.example.smartparkinglot.model.User
 import okhttp3.RequestBody
 //import okhttp3.Response
 import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
-
-//private const val BASE_URL = "https://d2ac-203-205-33-94.ngrok.io"
-//private const val BASE_URL = "http://dummy.restapiexample.com"
 interface APIService {
 
     @POST("/signup")

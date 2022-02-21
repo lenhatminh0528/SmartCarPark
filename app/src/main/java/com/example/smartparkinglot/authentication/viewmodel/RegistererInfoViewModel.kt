@@ -3,14 +3,11 @@ package com.example.smartparkinglot.authentication.viewmodel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.smartparkinglot.model.User
-import com.example.smartparkinglot.network.APIService
-import com.example.smartparkinglot.network.RESTClient
+import com.example.smartparkinglot.retrofit.RESTClient
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
