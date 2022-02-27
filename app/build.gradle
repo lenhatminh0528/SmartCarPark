@@ -8,12 +8,12 @@ plugins {
 }
 
 android {
-    compileSdk 30
+    compileSdk 31
 
     defaultConfig {
         applicationId "com.example.smartparkinglot"
         minSdk 24
-        targetSdk 30
+        targetSdk 31
         versionCode 1
         versionName "1.0"
 
@@ -80,6 +80,7 @@ dependencies {
     //RETROFIT
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:2.6.0'
 
     // Okhttp3 for the POST requests
     implementation 'com.squareup.okhttp3:okhttp:4.9.0'
@@ -95,10 +96,10 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     // ROOM
-    def roomVersion = "2.4.1"
+    def roomVersion = "2.4.2"
 
     // Room components
-            implementation "androidx.room:room-ktx:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
     androidTestImplementation "androidx.room:room-testing:$roomVersion"
 
@@ -113,4 +114,7 @@ dependencies {
 
     // optional - RxJava3 support for Room
     implementation("androidx.room:room-rxjava3:$roomVersion")
+
+    //RxJava
+    implementation("io.reactivex.rxjava2:rxjava:2.2.21")
 }

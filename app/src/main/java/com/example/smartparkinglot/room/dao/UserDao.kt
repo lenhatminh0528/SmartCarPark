@@ -11,9 +11,12 @@ interface UserDao {
     @Query("SELECT * FROM user_table ORDER BY username DESC")
     fun getListUser() : List<UserEntity>
 
+    @Query("SELECT * FROM user_table where id= :id")
+    fun getUserById(id: String): UserEntity
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(user: UserEntity)
 
     @Query("DELETE FROM user_table")
-    suspend fun deleteAll()
+    fun deleteAll()
 }

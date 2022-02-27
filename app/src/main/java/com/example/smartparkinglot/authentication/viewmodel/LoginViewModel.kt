@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import com.example.smartparkinglot.Result
 import com.example.smartparkinglot.retrofit.RESTClient
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -25,12 +27,11 @@ class LoginViewModel : ViewModel() {
 
             val response = RESTClient.getApi()
                 .signIn(jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+            val gson = GsonBuilder().create()
+                val dataFormat = gson.fromJson(JsonParser.parseString(response.body()?.string()), JsonObject::class.java)
 
             withContext(Dispatchers.Main) {
                 if(response.isSuccessful) {
-                    val gson = GsonBuilder().create()
-                    val dataFormat = gson.fromJson(response.body()?.string(), JSONObject::class.java)
-
                     val status = dataFormat.get("status").toString()
                     if (status.contains("success")) {
                         //login successful

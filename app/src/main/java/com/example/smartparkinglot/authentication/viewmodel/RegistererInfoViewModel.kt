@@ -41,13 +41,15 @@ class RegistererInfoViewModel : ViewModel() {
             val requestBody = jsonObjectString.toRequestBody("application/json".toMediaTypeOrNull())
             val result = RESTClient.getApi().signUp(requestBody)
             withContext(Dispatchers.Main){
-                Log.d(TAG, "callAPI: result.isSuccessful: ${result.isSuccessful}")
                 if (result.isSuccessful) {
                     val gson = GsonBuilder().setPrettyPrinting().create()
-                    val prettyDataFormat = gson.fromJson(JsonParser.parseString(result.body()
-                        ?.string()), JsonObject::class.java)
+
+                    val body = JsonParser.parseString(result.body()?.string())
+                    val prettyDataFormat = gson.fromJson(body, JsonObject::class.java)
+
                     val status = prettyDataFormat.get("status").toString()
                     val msg = prettyDataFormat.get("msg").toString()
+
                     Log.d(TAG, "callAPI: status: $status")
                     if(status.contains("failure")) {
                         Result.Error(Exception("Something went wrong!"))

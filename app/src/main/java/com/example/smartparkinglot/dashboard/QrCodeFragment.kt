@@ -30,6 +30,7 @@ class QrCodeFragment : Fragment() {
             userInfoViewModel = ViewModelProvider(this).get(UserInfoViewModel::class.java)
         }
         binding.viewModel = userInfoViewModel
+        binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
 
     }

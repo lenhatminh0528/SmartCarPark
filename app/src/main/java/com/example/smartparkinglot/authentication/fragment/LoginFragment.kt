@@ -82,13 +82,17 @@ class LoginFragment : Fragment() {
             CoroutineScope(Dispatchers.IO).launch {
                 when(val result = viewModel.callAPI()) {
                     is Result.Success -> {
+                        loading?.dismiss()
                         result.data?.let { AppShareRefs.setUserId(rootActivity, it) }
                         val intent = Intent(rootActivity, DashboardActivity::class.java)
                         intent.putExtra("user_id", id)
                         startActivity(intent)
                     }
                     is Result.Error ->
-                        result.exception.message?.let { showErrorDialog(it) }
+                        result.exception.message?.let {
+                            showErrorDialog(it)
+                            loading?.dismiss()
+                        }
                 }
             }
         }

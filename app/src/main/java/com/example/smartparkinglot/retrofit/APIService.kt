@@ -1,5 +1,6 @@
 package com.example.smartparkinglot.retrofit
 
+import com.example.smartparkinglot.retrofit.response.UserResponse
 import okhttp3.RequestBody
 //import okhttp3.Response
 import okhttp3.ResponseBody
@@ -18,5 +19,5 @@ interface APIService {
     suspend fun fetchMe(@Body requestBody: RequestBody): Response<ResponseBody>
 
     @GET("/showdb")
-    suspend fun showDB(@Query("col") col: String, @Query("id") userId: String): Response<ResponseBody>
+    suspend fun showDB(@Query("col") col: String, @Query("id") userId: String): Response<UserResponse>
 }

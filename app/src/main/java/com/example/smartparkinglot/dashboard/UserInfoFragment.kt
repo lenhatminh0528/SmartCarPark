@@ -26,7 +26,8 @@ class UserInfoFragment : Fragment() {
         userViewModel = requireActivity().run {
             ViewModelProvider(this).get(UserInfoViewModel::class.java)
         }
-        _binding.lifecycleOwner = this
+//        _binding.lifecycleOwner = this     Setting the fragment as the LifecycleOwner might cause memory leaks
+        binding.lifecycleOwner = viewLifecycleOwner
         _binding.viewModel = userViewModel
         return _binding.root
     }

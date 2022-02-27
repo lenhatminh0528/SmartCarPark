@@ -4,6 +4,7 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.os.Handler
 import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
@@ -18,13 +19,16 @@ import com.example.smartparkinglot.Result
 import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
+import com.example.smartparkinglot.dashboard.viewmodel.ViewModelFactory
 import com.example.smartparkinglot.databinding.ActivityDashboardBinding
+import com.example.smartparkinglot.repository.CarParkRepository
+import com.example.smartparkinglot.retrofit.APIService
+import com.example.smartparkinglot.retrofit.RESTClient
+import com.example.smartparkinglot.room.UserRoomDatabase
 import com.example.smartparkinglot.utils.NetworkUtils
 import kotlinx.android.synthetic.main.activity_dashboard.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
+import java.util.*
 
 class DashboardActivity : BaseActivity() {
     private val TAG = "DashboardActivity"
@@ -46,7 +50,8 @@ class DashboardActivity : BaseActivity() {
     override fun bindingView() {
         supportActionBar?.hide()
         binding = ActivityDashboardBinding.inflate(layoutInflater)
-        userInfoViewModel = ViewModelProvider(this).get(UserInfoViewModel::class.java)
+        var factory = ViewModelFactory(repository = CarParkRepository(UserRoomDatabase.getInstance(this), RESTClient.getApi()))
+        userInfoViewModel = ViewModelProvider(this, factory).get(UserInfoViewModel::class.java)
         setContentView(binding.root)
         setupNavigation()
     }
@@ -89,33 +94,50 @@ class DashboardActivity : BaseActivity() {
     }
 
     override fun setAction() {
+
+        userInfoViewModel.errorMessage.observe(this, {
+            if (it != null) {
+                loadingDialog?.dismiss()
+                showErrorDialog(it)
+            } else {
+                loadingDialog?.dismiss()
+            }
+        })
+
         setupWifiConnection()
     }
 
     private fun getFirstData() {
         //call API
+        val userId: String = intent.extras?.get("user_id").toString()
         loadingDialog = showLoadingDialog()
 
         if(!NetworkUtils.isNetworkConnect(this)) {
-            loadingDialog?.dismiss()
-            showErrorDialog("No network connection!")
+//            loadingDialog?.dismiss()
+//            showErrorDialog("No network connection!")
+            userInfoViewModel.errorMessage.value = "No network connection!"
         } else {
-            val userId: String = intent.extras?.get("user_id").toString()
             CoroutineScope(Dispatchers.IO).launch {
-                when (val result = userInfoViewModel.fetchData(userId)) {
-                    is Result.Success -> {
-                        withContext(Dispatchers.Main) {
-                            loadingDialog?.dismiss()
-                        }
-                    }
-                    is Result.Error -> {
-                        withContext(Dispatchers.Main) {
-                            loadingDialog?.dismiss()
-                            showErrorDialog(result.exception.message ?: "Something went wrong!")
-                        }
-                    }
-                }
+                userInfoViewModel.fetchUserInfo(userId)
             }
+            
+//
+//            CoroutineScope(Dispatchers.IO).launch {
+//                when (val result = userInfoViewModel.fetchData(userId)) {
+//                    is Result.Success -> {
+//                        withContext(Dispatchers.Main) {
+//                            loadingDialog?.dismiss()
+//                        }
+//                    }
+//                    is Result.Error -> {
+//                        withContext(Dispatchers.Main) {
+//                            loadingDialog?.dismiss()
+//                            showErrorDialog(result.exception.message ?: "Something went wrong!")
+//                        }
+//                    }
+//                }
+//            }
+
         }
     }
 

@@ -40,7 +40,4 @@ class RESTClient {
             return retrofit.create(APIService::class.java)
         }
     }
-
-
-
 }
