@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.smartparkinglot.R
 import com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
 import com.example.smartparkinglot.databinding.FragmentUserInfoBinding
+import dagger.android.support.AndroidSupportInjection
 
 class UserInfoFragment : Fragment() {
     private val TAG = "UserInfoFragment"
@@ -23,6 +24,7 @@ class UserInfoFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_user_info,container,false)
+
         userViewModel = requireActivity().run {
             ViewModelProvider(this).get(UserInfoViewModel::class.java)
         }
@@ -30,6 +32,11 @@ class UserInfoFragment : Fragment() {
         binding.lifecycleOwner = viewLifecycleOwner
         _binding.viewModel = userViewModel
         return _binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        AndroidSupportInjection.inject(this)
     }
 
 }

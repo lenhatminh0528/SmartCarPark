@@ -5,9 +5,9 @@ import com.example.smartparkinglot.room.UserRoomDatabase
 import com.example.smartparkinglot.Result
 import com.example.smartparkinglot.retrofit.response.UserResponse
 import com.example.smartparkinglot.room.mapper.UserMapper
+import javax.inject.Inject
 
 class CarParkRepository(var room: UserRoomDatabase,var apiService: APIService) {
-    private val TAG = "CarParkRepository"
 
     private suspend fun updateUser(userResponse: UserResponse?) {
         userResponse?.let {
@@ -30,8 +30,8 @@ class CarParkRepository(var room: UserRoomDatabase,var apiService: APIService) {
                 }
             } else {
                 var user = room.userDao().getUserById(userId)
-                Result.Success(response.body(), "Cannot fetch user from network, get from ROOM")
-//                Result.Error(java.lang.Exception("Something went wrong!"))
+//                Result.Success(response.body(), "Cannot fetch user from network, get from ROOM")
+                Result.Error(java.lang.Exception("Smething went wrong!"))
             }
         }catch (exception : Exception){
             Result.Error(exception)

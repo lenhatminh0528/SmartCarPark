@@ -18,28 +18,37 @@ import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.ConfirmationDialog
 import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.dashboard.DashboardActivity
+import com.example.smartparkinglot.dashboard.viewmodel.ViewModelFactory
 import com.example.smartparkinglot.databinding.FragmentLoginBinding
 import com.example.smartparkinglot.utils.NetworkUtils
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.fragment_login.view.*
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
 class LoginFragment : Fragment() {
-    private val TAG = "LoginFragment"
     private var mConfirmationDialog: ConfirmationDialog? = null
     private var loading: LoadingDialog? = null
     private lateinit var binding: FragmentLoginBinding
     private lateinit var rootActivity: AuthActivity
     private lateinit var alertDialog: AlertDialog
+
     private lateinit var viewModel : LoginViewModel
+//    @Inject
+//    lateinit var viewModel: LoginViewModel
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+
         binding = FragmentLoginBinding.inflate(inflater, container, false)
         rootActivity = activity as AuthActivity
-        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+
+        viewModel = ViewModelProvider(this, viewModelFactory).get(LoginViewModel::class.java)
         binding.viewModel = viewModel
         return binding.root
 
@@ -47,18 +56,20 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Inflate the layout for this fragment
+        AndroidSupportInjection.inject(this)
         setAction(view)
     }
 
     @SuppressLint("ClickableViewAccessibility")
     private fun setAction(view:View) {
 
-        view.setOnTouchListener(View.OnTouchListener{_, _ ->
+        view.setOnTouchListener {_, _ ->
             view.username.clearFocus()
             view.password.clearFocus()
             activity?.hideKeyboard(view)
             true
-        })
+        }
 
         binding.btnSignIn.setOnClickListener {
             handleBtnLogin()

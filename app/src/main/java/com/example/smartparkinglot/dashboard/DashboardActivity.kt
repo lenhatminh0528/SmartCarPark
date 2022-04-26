@@ -14,6 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.smartparkinglot.BaseActivity
+import com.example.smartparkinglot.MyApplication
 import com.example.smartparkinglot.R
 import com.example.smartparkinglot.Result
 import com.example.smartparkinglot.custom.AlertDialog
@@ -26,9 +27,12 @@ import com.example.smartparkinglot.retrofit.APIService
 import com.example.smartparkinglot.retrofit.RESTClient
 import com.example.smartparkinglot.room.UserRoomDatabase
 import com.example.smartparkinglot.utils.NetworkUtils
+import dagger.android.AndroidInjection
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.coroutines.*
 import java.util.*
+import javax.inject.Inject
 
 class DashboardActivity : BaseActivity() {
     private val TAG = "DashboardActivity"
@@ -36,7 +40,10 @@ class DashboardActivity : BaseActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityDashboardBinding
     private var alertDialog: AlertDialog? = null
-    private lateinit var userInfoViewModel: UserInfoViewModel
+    lateinit var userInfoViewModel: UserInfoViewModel
+//    @Inject
+//    lateinit var userInfoViewModel: UserInfoViewModel
+
     private var loadingDialog : LoadingDialog? = null
     private lateinit var networkCallback : ConnectivityManager.NetworkCallback
 
@@ -49,9 +56,9 @@ class DashboardActivity : BaseActivity() {
 
     override fun bindingView() {
         supportActionBar?.hide()
+        AndroidInjection.inject(this)
         binding = ActivityDashboardBinding.inflate(layoutInflater)
-        var factory = ViewModelFactory(repository = CarParkRepository(UserRoomDatabase.getInstance(this), RESTClient.getApi()))
-        userInfoViewModel = ViewModelProvider(this, factory).get(UserInfoViewModel::class.java)
+        userInfoViewModel = ViewModelProvider(this, viewModelFactory).get(UserInfoViewModel::class.java)
         setContentView(binding.root)
         setupNavigation()
     }
@@ -96,11 +103,9 @@ class DashboardActivity : BaseActivity() {
     override fun setAction() {
 
         userInfoViewModel.errorMessage.observe(this, {
+            loadingDialog?.dismiss()
             if (it != null) {
-                loadingDialog?.dismiss()
                 showErrorDialog(it)
-            } else {
-                loadingDialog?.dismiss()
             }
         })
 
@@ -113,31 +118,11 @@ class DashboardActivity : BaseActivity() {
         loadingDialog = showLoadingDialog()
 
         if(!NetworkUtils.isNetworkConnect(this)) {
-//            loadingDialog?.dismiss()
-//            showErrorDialog("No network connection!")
             userInfoViewModel.errorMessage.value = "No network connection!"
         } else {
             CoroutineScope(Dispatchers.IO).launch {
                 userInfoViewModel.fetchUserInfo(userId)
             }
-            
-//
-//            CoroutineScope(Dispatchers.IO).launch {
-//                when (val result = userInfoViewModel.fetchData(userId)) {
-//                    is Result.Success -> {
-//                        withContext(Dispatchers.Main) {
-//                            loadingDialog?.dismiss()
-//                        }
-//                    }
-//                    is Result.Error -> {
-//                        withContext(Dispatchers.Main) {
-//                            loadingDialog?.dismiss()
-//                            showErrorDialog(result.exception.message ?: "Something went wrong!")
-//                        }
-//                    }
-//                }
-//            }
-
         }
     }
 

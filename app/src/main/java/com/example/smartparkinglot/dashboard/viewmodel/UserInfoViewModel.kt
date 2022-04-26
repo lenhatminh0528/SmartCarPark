@@ -18,23 +18,24 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.lang.Exception
 import java.security.Provider
+import javax.inject.Inject
 
-class ViewModelFactory(var repository: CarParkRepository) : ViewModelProvider.Factory {
+class ViewModelFactory @Inject constructor(var repository: CarParkRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(UserInfoViewModel::class.java)) {
             return UserInfoViewModel(repository) as T
         }
-        throw IllegalAccessException("Unknow viewmodel")
+        throw IllegalAccessException("Un know view model")
     }
 
 }
 
-class UserInfoViewModel(var repository: CarParkRepository): ViewModel() {
-    private val TAG = "UserInfoViewModel"
+class UserInfoViewModel @Inject constructor(var repository: CarParkRepository): ViewModel() {
     var user = MutableLiveData<UserResponse?>()
     var errorMessage = MutableLiveData<String?>()
 
     suspend fun fetchUserInfo(userId: String) {
+
         when (val result = repository.getUserInfo(userId)) {
             is Result.Success -> {
                 user.postValue(result.data)
@@ -45,48 +46,5 @@ class UserInfoViewModel(var repository: CarParkRepository): ViewModel() {
             }
         }
     }
-
-//    suspend fun fetchData(userId: String): Result<User>{
-            //JSON using JSONObject
-//        return try {
-//            val jsonObject = JSONObject()
-//            with(jsonObject){
-//                put("col", "user")
-//                put("id", userId)
-//            }
-//
-//            val response = RESTClient.getApi()
-//                .showDB("user", userId.substring(1, userId.length - 1))
-//            if(response.isSuccessful) {
-//                val gson = GsonBuilder().setPrettyPrinting().create()
-//
-//                val prettyJson = gson.fromJson(
-//                    JsonParser.parseString(
-//                        response.body()
-//                            ?.string()), JsonObject::class.java)
-//
-//                val status: String = prettyJson.get("status").toString()
-//
-//                withContext(Dispatchers.Main){
-//                    if(status.contains("success")){
-//                        val data = gson.fromJson(prettyJson.get("data"),User::class.java)
-//                        user.value = data
-//                        Result.Success(data, "Fetch user successful!")
-//
-//                    }else {
-//                        Result.Error(Exception("Something went wrong!"))
-//                    }
-//                }
-//            } else {
-//                withContext(Dispatchers.Main){
-//                    Result.Error(Exception("Something went wrong!"))
-//                }
-//            }
-//        } catch (exception: Exception) {
-//                withContext(Dispatchers.Main) {
-//                    Result.Error(exception)
-//                }
-//        }
-//    }
 
 }

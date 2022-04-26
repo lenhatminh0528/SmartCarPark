@@ -28,6 +28,7 @@ import com.example.smartparkinglot.authentication.viewmodel.RegistererInfoViewMo
 import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.utils.NetworkUtils
+import dagger.android.support.AndroidSupportInjection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,6 +59,7 @@ class RegisterInfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentRegisterInfoBinding.inflate(inflater, container, false)
+
         viewModel = ViewModelProvider(this).get(RegistererInfoViewModel::class.java)
         rootActivity = activity as AuthActivity
         binding.viewModel = viewModel
@@ -89,6 +91,7 @@ class RegisterInfoFragment : Fragment() {
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        AndroidSupportInjection.inject(this)
         setupBottomSheet()
         setupAction()
     }

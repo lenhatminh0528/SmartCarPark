@@ -15,10 +15,15 @@ import androidx.core.app.ActivityCompat
 import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.ConfirmationDialog
 import com.example.smartparkinglot.custom.LoadingDialog
+import com.example.smartparkinglot.dashboard.viewmodel.ViewModelFactory
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import java.util.jar.Manifest
+import javax.inject.Inject
 
 abstract class BaseActivity: AppCompatActivity() {
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelFactory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

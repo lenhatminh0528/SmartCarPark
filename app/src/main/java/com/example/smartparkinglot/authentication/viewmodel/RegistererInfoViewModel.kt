@@ -15,8 +15,9 @@ import java.lang.Exception
 import com.example.smartparkinglot.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class RegistererInfoViewModel : ViewModel() {
+class RegistererInfoViewModel @Inject constructor() : ViewModel() {
     private val TAG = "RegistererInfoViewModel"
     var username: MutableLiveData<String> = MutableLiveData()
     var password: MutableLiveData<String> = MutableLiveData()

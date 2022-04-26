@@ -14,21 +14,23 @@ import com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
 import com.example.smartparkinglot.databinding.FragmentQrCodeBinding
 import com.example.smartparkinglot.retrofit.RESTClient
 import com.squareup.picasso.Picasso
+import dagger.android.support.AndroidSupportInjection
 
 class QrCodeFragment : Fragment() {
-    private val TAG = "QrCodeFragment"
     lateinit var binding : FragmentQrCodeBinding
     lateinit var userInfoViewModel: UserInfoViewModel
-    var mainHandler: Handler = Handler(Looper.getMainLooper())
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_qr_code,container,false)
+
         requireActivity().run {
             userInfoViewModel = ViewModelProvider(this).get(UserInfoViewModel::class.java)
         }
+
         binding.viewModel = userInfoViewModel
         binding.lifecycleOwner = viewLifecycleOwner
         return binding.root
@@ -37,7 +39,7 @@ class QrCodeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        AndroidSupportInjection.inject(this)
         userInfoViewModel.user.observe(viewLifecycleOwner, {
             val picasso = Picasso.get()
             picasso.isLoggingEnabled = true
