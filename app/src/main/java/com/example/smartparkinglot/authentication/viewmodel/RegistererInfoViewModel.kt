@@ -27,14 +27,14 @@ class RegistererInfoViewModel : ViewModel() {
 
     suspend fun callAPI() : Result<User> {
         return try {
-            val jsonObject = JSONObject()
-            with(jsonObject){
+            val jsonObject = JSONObject().apply {
                 put("username", username.value)
                 put("password", password.value)
                 put("address", address.value)
                 put("idcard", cardId.value)
                 put("carnum", carNumber.value)
             }
+
             // Convert JSONObject to String
             val jsonObjectString = jsonObject.toString()
             // Create RequestBody ( We're not using any converter, like GsonConverter, MoshiConverter e.t.c, that's why we use RequestBody )
