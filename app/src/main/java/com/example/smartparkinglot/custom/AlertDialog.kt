@@ -1,13 +1,10 @@
 package com.example.smartparkinglot.custom
 
 import android.app.Dialog
-import android.content.Context
 import android.graphics.Color
-import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.example.smartparkinglot.R
 
@@ -26,16 +23,14 @@ class AlertDialog(var builder: Builder) : BaseDialog() {
     }
 
     private fun setup() {
-        builder?.let {
+        builder.let {
             this.title?.text = it.title
             this.message?.text = it.message
             if(it.isSuccess){
-                Log.d("TAG", "setup: susscess")
                 imgView?.setImageDrawable(ResourcesCompat.getDrawable(resources,R.drawable.ic_success, null))
                 imgView?.setColorFilter(ResourcesCompat.getColor(resources,R.color.green_mint,null))
                 title?.setTextColor(Color.GREEN)
             }else {
-                Log.d("TAG", "setup: failed")
                 imgView?.setImageDrawable(ResourcesCompat.getDrawable(resources,R.drawable.ic_alert, null))
                 imgView?.setColorFilter(ResourcesCompat.getColor(resources,R.color.red, null))
                 title?.setTextColor(Color.RED)

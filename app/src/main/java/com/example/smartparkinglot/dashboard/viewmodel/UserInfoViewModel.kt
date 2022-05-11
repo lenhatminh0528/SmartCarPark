@@ -30,7 +30,6 @@ class ViewModelFactory(var repository: CarParkRepository) : ViewModelProvider.Fa
 }
 
 class UserInfoViewModel(var repository: CarParkRepository): ViewModel() {
-    private val TAG = "UserInfoViewModel"
     var user = MutableLiveData<UserResponse?>()
     var errorMessage = MutableLiveData<String?>()
 

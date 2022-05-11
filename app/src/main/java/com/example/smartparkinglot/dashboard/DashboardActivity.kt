@@ -4,8 +4,6 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
-import android.os.Handler
-import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -15,23 +13,19 @@ import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.smartparkinglot.BaseActivity
 import com.example.smartparkinglot.R
-import com.example.smartparkinglot.Result
 import com.example.smartparkinglot.custom.AlertDialog
 import com.example.smartparkinglot.custom.LoadingDialog
 import com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
 import com.example.smartparkinglot.dashboard.viewmodel.ViewModelFactory
 import com.example.smartparkinglot.databinding.ActivityDashboardBinding
 import com.example.smartparkinglot.repository.CarParkRepository
-import com.example.smartparkinglot.retrofit.APIService
 import com.example.smartparkinglot.retrofit.RESTClient
 import com.example.smartparkinglot.room.UserRoomDatabase
 import com.example.smartparkinglot.utils.NetworkUtils
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.coroutines.*
-import java.util.*
 
 class DashboardActivity : BaseActivity() {
-    private val TAG = "DashboardActivity"
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityDashboardBinding
@@ -50,7 +44,7 @@ class DashboardActivity : BaseActivity() {
     override fun bindingView() {
         supportActionBar?.hide()
         binding = ActivityDashboardBinding.inflate(layoutInflater)
-        var factory = ViewModelFactory(repository = CarParkRepository(UserRoomDatabase.getInstance(this), RESTClient.getApi()))
+        val factory = ViewModelFactory(repository = CarParkRepository(UserRoomDatabase.getInstance(this), RESTClient.getApi()))
         userInfoViewModel = ViewModelProvider(this, factory).get(UserInfoViewModel::class.java)
         setContentView(binding.root)
         setupNavigation()
@@ -78,14 +72,12 @@ class DashboardActivity : BaseActivity() {
         networkCallback = object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
-                Log.d(TAG, "onAvailable: network connecting")
                 alertDialog?.dismiss()
                 getFirstData()
             }
 
             override fun onLost(network: Network) {
                 super.onLost(network)
-                Log.d(TAG, "onLost: ")
                 showErrorDialog("No network connection!")
             }
         }
@@ -95,14 +87,14 @@ class DashboardActivity : BaseActivity() {
 
     override fun setAction() {
 
-        userInfoViewModel.errorMessage.observe(this, {
+        userInfoViewModel.errorMessage.observe(this) {
             if (it != null) {
                 loadingDialog?.dismiss()
                 showErrorDialog(it)
             } else {
                 loadingDialog?.dismiss()
             }
-        })
+        }
 
         setupWifiConnection()
     }

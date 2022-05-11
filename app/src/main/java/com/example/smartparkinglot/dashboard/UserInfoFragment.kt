@@ -1,7 +1,6 @@
 package com.example.smartparkinglot.dashboard
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,14 +12,13 @@ import com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
 import com.example.smartparkinglot.databinding.FragmentUserInfoBinding
 
 class UserInfoFragment : Fragment() {
-    private val TAG = "UserInfoFragment"
     private lateinit var _binding: FragmentUserInfoBinding
     val binding get() = _binding
-    var userViewModel: UserInfoViewModel? = null
+    private var userViewModel: UserInfoViewModel? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_user_info,container,false)
         userViewModel = requireActivity().run {
