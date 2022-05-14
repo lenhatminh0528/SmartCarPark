@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel" />
+            type="com.thesis.smartparkinglot.dashboard.viewmodel.UserInfoViewModel" />
     </data>
     <FrameLayout
         android:layout_width="match_parent"

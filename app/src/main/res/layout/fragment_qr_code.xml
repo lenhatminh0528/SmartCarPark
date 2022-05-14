@@ -3,7 +3,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.smartparkinglot.dashboard.viewmodel.UserInfoViewModel" />
+            type="com.thesis.smartparkinglot.dashboard.viewmodel.UserInfoViewModel" />
     </data>
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"

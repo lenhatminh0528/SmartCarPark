@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/userInfoFragment"
-        android:name="com.example.smartparkinglot.dashboard.UserInfoFragment"
+        android:name="com.thesis.smartparkinglot.dashboard.UserInfoFragment"
         android:label="fragment_user_info"
         tools:layout="@layout/fragment_user_info" />
     <fragment
         android:id="@+id/qrCodeFragment"
-        android:name="com.example.smartparkinglot.dashboard.QrCodeFragment"
+        android:name="com.thesis.smartparkinglot.dashboard.QrCodeFragment"
         android:label="fragment_qr_code"
         tools:layout="@layout/fragment_qr_code" />
 </navigation>

@@ -3,7 +3,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.smartparkinglot.authentication.viewmodel.LoginViewModel" />
+            type="com.thesis.smartparkinglot.authentication.viewmodel.LoginViewModel" />
     </data>
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
