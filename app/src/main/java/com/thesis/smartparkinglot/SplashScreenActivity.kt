@@ -1,16 +1,13 @@
 package com.thesis.smartparkinglot
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
 import android.os.Handler
-import android.os.Looper
-import android.util.Log
+import com.thesis.smartparkinglot.authentication.AccountActivity
 import com.thesis.smartparkinglot.authentication.AuthActivity
 import com.thesis.smartparkinglot.dashboard.DashboardActivity
 import com.thesis.smartparkinglot.databinding.ActivitySplashScreenBinding
 
-class SplashScreenActivity : BaseActivity() {
+class SplashScreenActivity : AccountActivity() {
     private lateinit var binding: ActivitySplashScreenBinding
 
     override fun bindingView() {
@@ -35,16 +32,19 @@ class SplashScreenActivity : BaseActivity() {
         }else {
             goToAuthScreen()
         }
+        finish()
     }
 
     private fun goToDashBoard(userId: String?) {
         val intent = Intent(this, DashboardActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.putExtra("user_id", userId)
         startActivity(intent)
     }
 
     private fun goToAuthScreen() {
         val intent = Intent(this, AuthActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         startActivity(intent)
     }
 }

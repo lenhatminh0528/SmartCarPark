@@ -22,7 +22,7 @@ class UserInfoFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_user_info,container,false)
         userViewModel = requireActivity().run {
-            ViewModelProvider(this).get(UserInfoViewModel::class.java)
+            ViewModelProvider(this)[UserInfoViewModel::class.java]
         }
 //        _binding.lifecycleOwner = this     Setting the fragment as the LifecycleOwner might cause memory leaks
         binding.lifecycleOwner = viewLifecycleOwner

@@ -70,8 +70,11 @@ dependencies {
     // Koin DI
     implementation "org.koin:koin-android:2.0.1"
     implementation "org.koin:koin-androidx-viewmodel:2.0.1"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0-rc03"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0-rc03"
+//    implementation "androidx.lifecycle:lifecycle-runtime-ktx:ktx:2.4.0"
+//    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:ktx:2.4.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.5.0-rc01"
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1'
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
     implementation 'com.squareup.okhttp3:logging-interceptor:4.8.0'
 

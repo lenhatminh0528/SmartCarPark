@@ -24,7 +24,7 @@ class QrCodeFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = DataBindingUtil.inflate(inflater,R.layout.fragment_qr_code,container,false)
         requireActivity().run {
-            userInfoViewModel = ViewModelProvider(this).get(UserInfoViewModel::class.java)
+            userInfoViewModel = ViewModelProvider(this)[UserInfoViewModel::class.java]
         }
         binding.viewModel = userInfoViewModel
         binding.lifecycleOwner = viewLifecycleOwner

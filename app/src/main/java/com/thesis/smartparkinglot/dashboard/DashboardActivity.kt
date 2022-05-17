@@ -11,10 +11,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.thesis.smartparkinglot.BaseActivity
+import com.thesis.smartparkinglot.authentication.AccountActivity
 import com.thesis.smartparkinglot.R
 import com.thesis.smartparkinglot.custom.AlertDialog
-import com.thesis.smartparkinglot.custom.LoadingDialog
 import com.thesis.smartparkinglot.dashboard.viewmodel.UserInfoViewModel
 import com.thesis.smartparkinglot.dashboard.viewmodel.ViewModelFactory
 import com.thesis.smartparkinglot.databinding.ActivityDashboardBinding
@@ -25,13 +24,11 @@ import com.thesis.smartparkinglot.utils.NetworkUtils
 import kotlinx.android.synthetic.main.activity_dashboard.*
 import kotlinx.coroutines.*
 
-class DashboardActivity : com.thesis.smartparkinglot.BaseActivity() {
+class DashboardActivity : BaseActivity() {
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityDashboardBinding
-    private var alertDialog: AlertDialog? = null
     private lateinit var userInfoViewModel: UserInfoViewModel
-    private var loadingDialog : LoadingDialog? = null
     private lateinit var networkCallback : ConnectivityManager.NetworkCallback
 
     private val networkRequest = NetworkRequest.Builder()

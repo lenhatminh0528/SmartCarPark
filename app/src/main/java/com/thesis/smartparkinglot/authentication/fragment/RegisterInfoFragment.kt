@@ -36,7 +36,6 @@ import kotlinx.coroutines.launch
 
 
 class RegisterInfoFragment : Fragment() {
-    private val TAG = "RegisterInfoFragment"
 
     companion object {
         private const val REQUEST_CAMERA = 2
@@ -56,7 +55,7 @@ class RegisterInfoFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentRegisterInfoBinding.inflate(inflater, container, false)
         viewModel = ViewModelProvider(this).get(RegistererInfoViewModel::class.java)
         rootActivity = activity as AuthActivity
@@ -144,11 +143,11 @@ class RegisterInfoFragment : Fragment() {
             findNavController().popBackStack()
         }
 
-        binding.root.setOnTouchListener(View.OnTouchListener { view, _ ->
+        binding.root.setOnTouchListener { view, _ ->
             clearFocus()
             activity?.hideKeyboard(view)
             true
-        })
+        }
 
         binding.carImg.setOnClickListener {
             bottomSheet!!.show()

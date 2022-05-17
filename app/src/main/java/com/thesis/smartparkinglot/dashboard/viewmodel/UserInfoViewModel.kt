@@ -20,7 +20,7 @@ import java.lang.Exception
 import java.security.Provider
 
 class ViewModelFactory(var repository: CarParkRepository) : ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(UserInfoViewModel::class.java)) {
             return UserInfoViewModel(repository) as T
         }

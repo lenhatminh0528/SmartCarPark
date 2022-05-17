@@ -1,5 +1,6 @@
 package com.thesis.smartparkinglot.retrofit
 
+import com.thesis.smartparkinglot.retrofit.response.SignInResponse
 import com.thesis.smartparkinglot.retrofit.response.UserResponse
 import okhttp3.RequestBody
 //import okhttp3.Response
@@ -13,7 +14,7 @@ interface APIService {
     suspend fun signUp(@Body requestBody: RequestBody): Response<ResponseBody>
 
     @POST("/signin")
-    suspend fun signIn(@Body requestBody: RequestBody): Response<ResponseBody>
+    suspend fun signIn(@Body requestBody: RequestBody): Response<SignInResponse>
 
     @POST("/fetchMe")
     suspend fun fetchMe(@Body requestBody: RequestBody): Response<ResponseBody>

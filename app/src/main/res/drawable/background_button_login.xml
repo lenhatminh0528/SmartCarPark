@@ -7,16 +7,17 @@
                 android:endColor="@color/green_ming_0"/>
         </shape>
     </item>
-    <item android:state_pressed="true">
-        <shape>
-            <corners android:radius="20dp"/>
-            <solid android:color="@color/green_ming_0"/>
-        </shape>
-    </item>
     <item android:state_enabled="false">
         <shape>
             <corners android:radius="20dp"/>
             <solid android:color="@color/green_ming_0"/>
         </shape>
     </item>
+    <item android:state_pressed="true" android:state_enabled="true">
+        <shape>
+            <corners android:radius="20dp"/>
+            <solid android:color="@color/green_ming_0"/>
+        </shape>
+    </item>
+
 </selector>
